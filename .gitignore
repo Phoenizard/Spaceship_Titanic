@@ -3,4 +3,10 @@ __pycache__/
 *.log
 .DS_Store
 .ipynb_checkpoints/
-data/
+# Add /data to ignore data files, but keep the file train.csv and test.csv
+data/*
+!data/train.csv
+!data/test.csv
+!data/sample_submission.csv
+submission/
+catboost_info/

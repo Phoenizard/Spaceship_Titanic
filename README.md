@@ -30,6 +30,8 @@ After feature extraction, we normalize the features before training.
 
 ## Model Training
 
+### Neural Network Architecture
+
 We build a simple fully-connected neural network for binary classification. Below is the model architecture implemented using PyTorch:
 
 ```python
@@ -51,7 +53,7 @@ class BinaryClassification(nn.Module):
 
 ```
 
-### Training Parameters
+#### Training Parameters
 
 | Parameter           | Value   |
 |---------------------|---------|
@@ -63,13 +65,27 @@ class BinaryClassification(nn.Module):
 
 *Note: Although the above table shows training for 200 epochs, our final training run was conducted for 800 epochs using the Adam optimizer with `BCEWithLogitsLoss` as the loss function. This achieved a validation accuracy of approximately **0.794**.*
 
-### Loss Function Visualization
+#### Loss Function Visualization
 
 Below is an example visualization of the loss function during training:
 
 ![Loss Function](img/loss.png)
 
+### CatBoost Classifier Model
+
+By using the CatBoost classifier, we can achieve a higher accuracy than with a neural network. The following code snippet demonstrates how to train a CatBoost model:
+
+```python
+model = CatBoostClassifier(iterations=1000, depth=6, learning_rate=0.1, loss_function='Logloss', verbose=True)
+
+model.fit(train_pool, eval_set=val_pool)
+```
+
+Data has been preprocessed by the method mentioned above. The model is trained with 1000 iterations, a depth of 6, and a learning rate of 0.1. The result hits an accuracy of **0.80383**.
+
 ## Changelog
+
+- Feb 3, 2025: Added CatBoost model training and updated the README with the model's performance.
 
 - Feb 2, 2025: Initial commit. Completed basic data cleaning and established a neural network training workflow, supporting a full pipeline from data loading to prediction and inference.
 
@@ -78,7 +94,7 @@ Below is an example visualization of the loss function during training:
 - [ ] Develop a more robust neural network architecture and optimize hyperparameters.
 - [ ] Apply PCA to reduce the dimensionality of the data and evaluate its effectiveness.
 - [ ] Explore and discuss improved strategies for handling NaN values in the `HomePlanet` and `Destination` columns.
-- [ ] Tuning Learning Rate
+- [x] Tuning Learning Rate
 
 
 ## License
