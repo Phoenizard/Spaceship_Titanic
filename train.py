@@ -10,13 +10,13 @@ np.random.seed(42)
 torch.manual_seed(42)
 #========================= Hyperparameters ======================
 scaler = StandardScaler()
-train_test_split = 0.7
+train_test_split = 0.8
 batch_size = 64
-learning_rate = 0.001
-num_epochs = 200
+learning_rate = 0.01
+num_epochs = 300
 num_features = 13
 isTrain = True
-isInference = False
+isInference = True
 #========================= Load data ============================
 data = pd.read_csv('data/trainData.csv')
 features = ['HomePlanet', 'Destination', 'Age', 'RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck', 'VIP', 'CryoSleep', 'Deck', 'Room', 'Info']
@@ -38,7 +38,7 @@ val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 #=========================Model, Loss, and Optimizer ====================
 model = BinaryClassification(input_dim=num_features)
 loss_fn = nn.BCEWithLogitsLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
 train_losses = []
 val_losses = []
 best_val_loss = float('inf')
@@ -68,11 +68,12 @@ if isTrain:
         val_losses.append(val_loss)
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            torch.save(model.state_dict(), 'best_model.pth')
+            if isInference:
+                torch.save(model.state_dict(), 'best_model.pth')
 
         print(f'Epoch {epoch + 1}/{num_epochs}, train_loss: {train_loss}, val_loss: {val_loss}')
-
 #========================= Plot Losses ============================
+    print("Best Val Loss: ", min(val_losses))
     plt.plot(train_losses, label='train loss')
     plt.plot(val_losses, label='val loss')
     plt.legend()
@@ -95,4 +96,4 @@ if isInference:
     passenger_ids = test_data['PassengerId']
     output = pd.DataFrame({'PassengerId': passenger_ids, 'Transported': pred_labels.flatten()})
     output['Transported'] = output['Transported'].map({0: False, 1: True})
-    output.to_csv('submission.csv', index=False)
+    output.to_csv('submissionFeb4.csv', index=False)
